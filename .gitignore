@@ -1,0 +1,32 @@
+# 비밀/런타임 파일 (절대 커밋 금지)
+# - .auth.json: 페어링 세션 토큰
+# - .subs.json: 폰 푸시 구독 정보
+# - .vapid.json: VAPID 개인키 (설치 시 자동 생성)
+skill/bridge/.auth.json
+skill/bridge/.subs.json
+skill/bridge/.vapid.json
+*.log
+bridge.log
+
+# 의존성 (npm install 로 받음)
+**/node_modules/
+
+# 개인 메모(내 Tailscale 주소 포함) — 공개 안 함
+사용법.md
+
+# 원본 미사용/대용량 파일
+ios/
+recording.mp4
+
+# 빌드/에디터/OS
+**/build/
+**/DerivedData/
+**/xcuserdata/
+**/*.xcuserstate
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+*~
+*.bak
+settings.json.claude-watch.bak

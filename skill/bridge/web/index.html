@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0b0d10" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Claude Watch" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <title>Claude Watch</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Floating permission cards (always visible, actionable) -->
+  <div id="permissions"></div>
+
+  <!-- ── Connect screen ── -->
+  <section id="connect-screen" class="screen">
+    <div class="connect-box">
+      <img src="/icon-192.png" class="logo" alt="" />
+      <h1>Claude&nbsp;Watch</h1>
+      <p class="sub">브릿지 콘솔의 <b>6자리 코드</b>를 입력하세요.</p>
+      <input id="code-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000" autocomplete="one-time-code" />
+      <button id="pair-btn">연결</button>
+      <p id="connect-error" class="error"></p>
+      <p class="origin">서버 · <span id="origin"></span></p>
+    </div>
+  </section>
+
+  <!-- ── Folder list screen ── -->
+  <section id="list-screen" class="screen hidden">
+    <header>
+      <span id="status-dot" class="dot"></span>
+      <h1 class="htitle">대화</h1>
+      <button id="push-btn" class="hbtn" title="알림">🔔</button>
+      <button id="refresh-btn" class="hbtn" title="새로고침">↻</button>
+      <button id="menu-btn" class="hbtn" title="연결 해제">⋯</button>
+    </header>
+    <main id="folder-list"></main>
+  </section>
+
+  <!-- ── Chat screen ── -->
+  <section id="chat-screen" class="screen hidden">
+    <header>
+      <button id="back-btn" class="hbtn" title="뒤로">‹</button>
+      <div class="chat-head">
+        <div id="chat-title">…</div>
+        <div id="chat-sub"></div>
+      </div>
+      <span id="chat-status" class="chat-status"></span>
+    </header>
+    <main id="chat-log"></main>
+    <footer>
+      <input id="cmd-input" placeholder="메시지 ( 키보드 🎙️ 음성 )" enterkeyhint="send" />
+      <button id="send-btn">전송</button>
+    </footer>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
