@@ -2,12 +2,12 @@
   <img src="logo.png" width="120" alt="Claude Watch" />
 </p>
 
-<h1 align="center">Claude Watch — 아이폰 모니터</h1>
+<h1 align="center">Claude Watch — 모바일 모니터 (아이폰 · 안드로이드)</h1>
 
 <p align="center">
-  Windows PC에서 돌아가는 <strong>Claude Code를 아이폰에서 지켜보고</strong>,<br/>
+  PC에서 돌아가는 <strong>Claude Code를 스마트폰에서 지켜보고</strong>,<br/>
   <strong>알림 받고</strong>, <strong>권한을 승인</strong>하는 도구. <br/>
-  <b>Mac · Xcode 없이</b> 아이폰 Safari(웹앱)만으로. 연결은 무료 <a href="https://tailscale.com">Tailscale</a>로 어디서나.
+  <b>Mac · Xcode · 앱스토어 없이</b> 폰 브라우저(웹앱)만으로. 연결은 무료 <a href="https://tailscale.com">Tailscale</a>로 어디서나.
 </p>
 
 ---
@@ -17,10 +17,11 @@
 PC에서 Claude Code로 작업을 시켜놓고 자리를 비웠을 때, **폰으로 진행 상황을 보고 / 알림을 받고 / "이 명령 실행해도 돼?" 같은 권한 요청을 폰에서 승인**할 수 있게 해줍니다.
 
 - PC의 Node.js "브릿지"가 Claude Code 이벤트를 받아서 폰으로 중계해요.
-- 폰은 그냥 **Safari로 웹앱을 열고 "홈 화면에 추가"** 하면 끝 (앱스토어·Mac 불필요).
+- 폰은 그냥 **브라우저로 웹앱을 열고 "홈 화면에 추가"** 하면 끝 (앱스토어·Mac 불필요).
 - 밖(LTE/5G)에서도 **Tailscale**(무료 VPN 같은 것)로 내 PC에 안전하게 연결됩니다.
+- **아이폰(Safari)·안드로이드(Chrome) 둘 다 동작**합니다. (안드로이드 알림이 오히려 더 안정적)
 
-> ⚠️ **읽기 전용 모니터입니다.** 폰에서 **새 명령을 직접 타이핑해서 보내는 건 안 돼요** (자세한 이유는 [한계](#-한계) 참고). **보기 + 알림 + 권한 승인/선택**이 핵심 기능이에요.
+> ⚠️ **읽기 전용 모니터입니다.** 폰에서 **새 명령을 직접 타이핑해서 보내는 건 안 돼요** ([한계](#-한계) 참고). **보기 + 알림 + 권한 승인/선택**이 핵심 기능이에요.
 
 ---
 
@@ -30,14 +31,15 @@ PC에서 Claude Code로 작업을 시켜놓고 자리를 비웠을 때, **폰으
 - 🔔 **푸시 알림** — 권한 요청·작업 완료·대기 시 폰으로 (앱을 닫아도 옴)
 - ✅ **권한 승인 / 거부 / 선택지 응답** — 폰에서 탭하면 PC의 Claude가 계속 진행
 - 🌐 **어디서나 접속** — Tailscale HTTPS로 집·밖 구분 없이
-- 📲 **설치 간단** — 아이폰 Safari → 홈 화면에 추가 (네이티브 앱 아님, PWA)
+- 📲 **설치 간단** — 폰 브라우저 → 홈 화면에 추가 (네이티브 앱 아님, PWA)
+- 📱 **아이폰 · 안드로이드 공용** — Safari / Chrome 모두
 - 🔓 **자동 로그인** — 한 번 페어링하면 브릿지를 껐다 켜도 다시 안 해도 됨
 
 ---
 
 ## 📱 화면 (스크린샷)
 
-> 스크린샷은 본인 아이폰에서 찍어 `docs/` 폴더에 넣고 아래 경로를 바꿔주세요.
+> 스크린샷은 본인 폰에서 찍어 `docs/` 폴더에 넣고 아래 경로를 바꿔주세요.
 
 | 폴더 목록 | 대화 보기 | 권한 카드 |
 |---|---|---|
@@ -52,21 +54,21 @@ PC에서 Claude Code로 작업을 시켜놓고 자리를 비웠을 때, **폰으
 ## 🏗 구조
 
 ```
-┌──────────── Windows PC ────────────┐
-│  Claude Code ──(HTTP 훅)──▶ 브릿지   │
-│                          (Node, 7860)│
-│                          - 대화 기록 읽기
-│                          - 알림(푸시) 발송
-│                          - PWA 웹앱 서빙
-└───────────────────┬──────────────────┘
+┌──────────── PC (Windows/Mac/Linux) ────┐
+│  Claude Code ──(HTTP 훅)──▶ 브릿지       │
+│                          (Node, 7860)   │
+│                          - 대화 기록 읽기 │
+│                          - 알림(푸시) 발송│
+│                          - PWA 웹앱 서빙  │
+└───────────────────┬──────────────────────┘
                     │ Tailscale (HTTPS, 암호화)
                     ▼
-            📱 아이폰 Safari → 홈 화면 앱
+       📱 폰 브라우저(Safari/Chrome) → 홈 화면 앱
 ```
 
 - **브릿지**(`skill/bridge/server.js`): Claude Code 훅 이벤트 수신 → 폰으로 SSE 중계 + 푸시 알림 + 웹앱 제공
 - **대화 내용**: `~/.claude/projects/**/*.jsonl`(Claude Code 기록 파일)을 읽어서 보여줌
-- **HTTPS**: `tailscale serve`가 `https://<기기>.<tailnet>.ts.net` → `localhost:7860`으로 프록시 (iOS 푸시는 HTTPS 필수)
+- **HTTPS**: `tailscale serve`가 `https://<기기>.<tailnet>.ts.net` → `localhost:7860`으로 프록시 (모바일 푸시는 HTTPS 필수)
 
 ---
 
@@ -74,10 +76,10 @@ PC에서 Claude Code로 작업을 시켜놓고 자리를 비웠을 때, **폰으
 
 | 항목 | 내용 |
 |---|---|
-| PC | **Windows**(테스트 환경) 또는 macOS/Linux. **Node.js 18+** |
+| PC | **Windows / macOS / Linux** + **Node.js 18+** |
 | Claude Code | 설치 + 로그인 되어 있어야 함 |
-| 아이폰 | iOS **16.4 이상** (웹 푸시 지원) |
-| Tailscale | PC·아이폰 모두 설치, **같은 계정** 로그인 (무료) |
+| 폰 | **아이폰**: iOS **16.4 이상** (Safari) · **안드로이드**: 최신 **Chrome** (버전 제약 거의 없음) |
+| Tailscale | PC·폰 모두 설치, **같은 계정** 로그인 (무료) |
 
 ---
 
@@ -101,7 +103,7 @@ node skill/setup-hooks.mjs
 > 모든 Claude Code 세션이 브릿지로 이벤트를 보내도록 `~/.claude/settings.json`에 HTTP 훅을 등록해요. 나중에 제거: `node skill/setup-hooks.mjs --remove`
 
 ### 4) Tailscale 설치 + HTTPS 켜기
-1. PC와 아이폰에 [Tailscale](https://tailscale.com/download) 설치 → **같은 계정**으로 로그인.
+1. **PC와 폰**에 [Tailscale](https://tailscale.com/download) 설치 → **같은 계정**으로 로그인. (폰: App Store / Google Play에서 "Tailscale")
 2. PC에서 **Serve(HTTPS) 기능 활성화** (한 번만):
    ```bash
    tailscale serve --bg 7860
@@ -115,7 +117,7 @@ node skill/setup-hooks.mjs
 
 ### 5) 브릿지 실행
 - **Windows**: `start-bridge.cmd` 더블클릭
-- 또는 어디서나: `node skill/bridge/server.js`
+- **Mac/Linux 또는 공통**: `node skill/bridge/server.js`
 
 검은 창(콘솔)에 이렇게 떠요:
 ```
@@ -125,11 +127,19 @@ node skill/setup-hooks.mjs
 ```
 **이 창은 켜둬야 합니다** (닫으면 브릿지 꺼짐).
 
-### 6) 아이폰에서 연결
+### 6) 폰에서 연결
+
+**아이폰 (Safari)**
 1. **Safari**로 4단계의 HTTPS 주소 열기: `https://<기기명>.<tailnet>.ts.net`
 2. **6자리 코드**(검은 창) 입력 → 연결
-3. Safari **공유 → 홈 화면에 추가** → 이제 아이콘으로 실행
-4. 헤더의 **🔔 탭 → 허용** (알림 켜기, 홈 화면 앱에서만 작동)
+3. 공유 버튼(⬆️) → **홈 화면에 추가** → 아이콘으로 실행
+4. 헤더 **🔔 탭 → 허용**
+
+**안드로이드 (Chrome)**
+1. **Chrome**으로 같은 HTTPS 주소 열기
+2. **6자리 코드** 입력 → 연결
+3. 우상단 ⋮ 메뉴 → **홈 화면에 추가**(또는 "앱 설치") → 아이콘으로 실행
+4. 헤더 **🔔 탭 → 허용**
 
 🎉 끝! 이제 PC에서 Claude Code를 쓰면 폰에서 보이고, 알림이 오고, 권한을 폰에서 승인할 수 있어요.
 
@@ -137,8 +147,8 @@ node skill/setup-hooks.mjs
 
 ## 📲 매일 쓰는 법
 
-1. PC: `start-bridge.cmd` 더블클릭 (검은 창 켜두기)
-2. 아이폰: 홈 화면 **Claude Watch** 아이콘 실행 → 자동 로그인
+1. PC: 브릿지 켜기 (`start-bridge.cmd` 더블클릭 또는 `node skill/bridge/server.js`)
+2. 폰: 홈 화면 **Claude Watch** 아이콘 실행 → 자동 로그인
 3. 알림 오면 폰에서 승인·선택 / 대화는 폴더별로 확인
 
 ---
@@ -146,9 +156,12 @@ node skill/setup-hooks.mjs
 ## 🔔 알림에 대해
 
 - **권한 요청**·**작업 완료/대기** 시 폰으로 푸시가 와요 (앱을 닫아도).
-- 폰에서 직접 테스트: 헤더 🔔 누른 상태로, 브릿지가 이벤트를 받으면 알림 발송.
-- iOS 푸시는 까다로워서 이 프로젝트가 잡아둔 핵심 2가지:
-  - **VAPID 발신자 주소는 실제 이메일 형식**이어야 함 (가짜 도메인 `@local`은 Apple이 **403**으로 거부). 기본값으로 동작하며, 바꾸려면 환경변수 `VAPID_SUBJECT="mailto:you@example.com"`.
+- **이 앱은 "홈 화면에 추가"한 상태에서만 🔔이 켜집니다** (아이폰·안드로이드 공통). 꼭 홈 화면 아이콘으로 실행 후 켜세요.
+- **플랫폼별 참고:**
+  - **안드로이드(Chrome)**: 웹 푸시가 잘 지원돼 **가장 안정적**. **진동 알림**도 됩니다.
+  - **아이폰(Safari)**: **iOS 16.4 이상** + 홈 화면 추가 필수. (웹 진동은 미지원)
+- iOS 푸시가 까다로워서 이 프로젝트가 잡아둔 핵심 2가지(둘 다 적용돼 있어 그냥 동작):
+  - **VAPID 발신자 주소는 실제 이메일 형식**이어야 함 (가짜 도메인 `@local`은 Apple이 **403**으로 거부). 바꾸려면 환경변수 `VAPID_SUBJECT="mailto:you@example.com"`.
   - **알림마다 고유 태그** 사용 (고정 태그면 iOS가 조용히 덮어써서 배너가 안 뜸).
 
 ---
@@ -159,7 +172,7 @@ node skill/setup-hooks.mjs
   - ✅ 되는 것: **보기 · 알림 · 권한 승인 · 선택지 응답** (이미 돌아가는 세션에 "답"만 주는 거라 OK)
   - ❌ 안 되는 것: **폰에서 새 작업을 글로 지시** (새 추론을 띄워야 해서 막힘)
 - 폰 타이핑 지시까지 원하면 **Anthropic API 키**(유료, 토큰당 과금)를 발급해 쓰는 방법이 있어요. (이 경우 `claude -p`/[Happy](https://happy.engineering) 등과 연동)
-- 앱(또는 Safari 탭)을 닫으면 실시간 화면은 끊기지만 **푸시 알림은 계속 옵니다.**
+- 앱(또는 브라우저 탭)을 닫으면 실시간 화면은 끊기지만 **푸시 알림은 계속 옵니다.**
 
 ---
 
@@ -167,10 +180,10 @@ node skill/setup-hooks.mjs
 
 | 증상 | 해결 |
 |---|---|
-| 폰에서 안 열림 | 아이폰 Tailscale 켜짐 / 브릿지(검은 창) 켜짐 / 주소가 `https://...ts.net` 인지 확인 |
+| 폰에서 안 열림 | 폰 Tailscale 켜짐 / 브릿지(검은 창) 켜짐 / 주소가 `https://...ts.net` 인지 확인 |
 | "too many pairing attempts" | 잠깐 후 재시도, 또는 브릿지 재시작(검은 창 닫고 다시 켜기 → 새 코드) |
-| 알림이 안 옴 | **홈 화면 앱**으로 실행했는지 / 저전력모드·집중모드 끔 / 설정→알림→Claude Watch 허용 / 🔔 다시 눌러 재구독 |
-| 페어링 코드 만료 | `start-bridge.cmd` 다시 실행 → 새 코드로 1회 재연결 |
+| 알림이 안 옴 | **홈 화면 앱**으로 실행했는지 / (아이폰) iOS 16.4+ · 집중모드 끔 / (안드로이드) Chrome 알림 권한 / 설정→알림에서 Claude Watch 허용 / 🔔 다시 눌러 재구독 |
+| 페어링 코드 만료 | 브릿지 다시 실행 → 새 코드로 1회 재연결 |
 | 대화가 안 보임 | PC에서 Claude Code를 한 번이라도 실행했는지 확인 (기록 파일이 있어야 보임) |
 
 ---
@@ -183,7 +196,7 @@ claude-watch-mobile/
 │   ├── bridge/
 │   │   ├── server.js        # 브릿지: 훅 수신 + SSE + 푸시 + 웹앱 서빙
 │   │   ├── package.json
-│   │   └── web/             # 아이폰 PWA (HTML/CSS/JS)
+│   │   └── web/             # 폰 PWA (HTML/CSS/JS)
 │   │       ├── index.html
 │   │       ├── app.js
 │   │       ├── style.css
@@ -210,7 +223,7 @@ claude-watch-mobile/
 ## 🙏 크레딧
 
 이 프로젝트는 [**shobhit99/claude-watch**](https://github.com/shobhit99/claude-watch)(Apple Watch용 원작)를 기반으로,
-**Mac/Xcode 없이 Windows + 아이폰(PWA) + Tailscale**로 동작하는 **읽기 전용 모니터**로 개조한 것입니다.
+**Mac/Xcode 없이 PC + 스마트폰(아이폰·안드로이드, PWA) + Tailscale**로 동작하는 **읽기 전용 모니터**로 개조한 것입니다.
 
 ## 📄 License
 
