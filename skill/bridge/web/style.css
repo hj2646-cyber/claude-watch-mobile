@@ -134,8 +134,3 @@ footer {
 .perm-deny { background: var(--red); color: #2a0c0a; }
 .perm-allowall { background: #2c6e3e; color: #d9ffe5; }
 .perm-opt { background: var(--panel2); color: var(--txt); border: 1px solid var(--line) !important; }
-
-/* Monitor-only build: sending new prompts is blocked by org policy, so the
-   chat is read-only (view conversation + approve permissions + notifications). */
-#chat-screen footer { display: none; }
-#chat-log { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }

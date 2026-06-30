@@ -1463,12 +1463,15 @@ async function handleCommand(req, res) {
         targetSession.state = "running";
         pushSseEvent("session", { state: "running", agent: targetSession.agent, cwd: targetSession.cwd, folderName: targetSession.folderName }, sessionId);
 
-        const proc = childSpawn(bin, args, {
+        // Windows: spawn via cmd.exe with shell:false so Node quotes each arg
+        // (multi-word / Korean prompts survive). shell:true would split them.
+        const isWin = process.platform === "win32";
+        const spawnCmd = isWin ? (process.env.ComSpec || "cmd.exe") : bin;
+        const spawnArgs = isWin ? ["/c", bin, ...args] : args;
+        const proc = childSpawn(spawnCmd, spawnArgs, {
           cwd: targetSession.cwd,
           env: { ...process.env },
           stdio: ["ignore", "pipe", "pipe"],
-          // Windows: `claude` resolves to claude.cmd, which needs a shell to spawn.
-          shell: process.platform === "win32",
         });
 
         let stderrBuf = "";
