@@ -224,7 +224,7 @@ claude-watch-mobile/
 ## 🙏 크레딧
 
 이 프로젝트는 [**shobhit99/claude-watch**](https://github.com/shobhit99/claude-watch)(Apple Watch용 원작)를 기반으로,
-**Mac/Xcode 없이 PC + 스마트폰(아이폰·안드로이드, PWA) + Tailscale**로 동작하는 **읽기 전용 모니터**로 개조한 것입니다.
+**Mac/Xcode 없이 PC + 스마트폰(아이폰·안드로이드, PWA) + Tailscale**로 동작하는 **모바일 모니터 + 대화 전송** 도구로 개조한 것입니다.
 
 ## 📄 License
 
